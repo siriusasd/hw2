@@ -1,5 +1,5 @@
 #include "mbed.h"
-using namespace std::chrono;
+#include "uLCD_4DGL.h"
  
 DigitalOut led1(LED1);    // Configure LED1 pin as output
 DigitalOut led2(LED2);
@@ -11,89 +11,83 @@ DigitalIn Select(D5);
  
 Timer debounce;
 
+uLCD_4DGL uLCD(D1, D0, D2);
+
+void genWave(int freq)
+{
+    freq*=100;
+
+}
+
 int main()
 {
-    int status=0, afterUp=0,afterDown=0,afterSelection=0;
-
+    int enable=0,index=1;
+    uLCD.printf("\nSelection:\n"); //Default Green on black text
+    uLCD.printf("\n100Hz <--\n");
+    uLCD.printf("\n200Hz\n");
+    uLCD.printf("\n300Hz\n");
+    
     while(1) 
     {
-        switch(status)
+        if(Up.read()==1&&Down.read()==0&&Select.read()==0) 
+        {    
+            enable=1;   
+            if(index>1)
+                index--;
+            else
+                index=3;
+        } 
+        else if(Up.read()==0&&Down.read()==1&&Select.read()==0) 
         {
-            case 0:
-                debounce.start();
-                if(Up.read()==1&&Down.read()==0&&Select.read()==0&&duration_cast<milliseconds>(debounce.elapsed_time()).count() > 1000) {    //detect button
-                    status=1;
-                    debounce.reset();
-                    break;
-                } 
-                else if(Up.read()==0&&Down.read()==1&&Select.read()==0&&duration_cast<milliseconds>(debounce.elapsed_time()).count() > 1000) {
-                    status=2;
-                    debounce.reset();
-                    break;
-                }
-                else if(Up.read()==0&&Down.read()==0&&Select.read()==1&&duration_cast<milliseconds>(debounce.elapsed_time()).count() > 1000) {
-                    status=3;
-                    debounce.reset();
-                    break;
-                }
-                else{
-                    status=0;
-                    break;
-                }
-            case 1:
-                if(afterUp==0) {
-                    led1=1;
-                    afterUp=1;
-                    status=0;
-                    break;
-                }
-                else {
-                    led1=0;
-                    afterUp=0;
-                    status=0;
-                    break;
-                }
-            
-            case 2:
-                if(afterDown==0) {
-                    led2=1;
-                    afterDown=1;
-                    status=0;
-                    break;
-                }
-                else {
-                    led2=0;
-                    afterDown=0;
-                    status=0;
-                    break;
-                }
-            
-            case 3:
-                if(afterSelection==0) {
-                    led3=1;
-                    afterSelection=1;
-                    status=0;
-                    break;
-                }
-                else {
-                    led3=0;
-                    afterSelection=0;
-                    status=0;
-                    break;
-                }
+            enable=1;   //<-----
+            if(index<3)
+                index++;
+            else
+                index=1;
+
         }
-        
+        else if(Up.read()==0&&Down.read()==0&&Select.read()==1) {
+            //function
+            genWave(index);
+            enable=0;   //<-----
+            
+        }
+        else {
+            continue;
+        }
+
+        if(enable==1)
+        {
+            switch(index)
+            {
+                case 1:
+                    uLCD.cls();
+                    uLCD.printf("\nSelection:\n"); //Default Green on black text
+                    uLCD.printf("\n100Hz <--\n");
+                    uLCD.printf("\n200Hz\n");
+                    uLCD.printf("\n300Hz\n");
+                    enable=0;
+                    break;
+                case 2:
+                    uLCD.cls();
+                    uLCD.printf("\nSelection:\n"); //Default Green on black text
+                    uLCD.printf("\n100Hz\n");
+                    uLCD.printf("\n200Hz <--\n");
+                    uLCD.printf("\n300Hz\n");
+                    enable=0;
+                    break;
+                case 3:
+                    uLCD.cls();
+                    uLCD.printf("\nSelection:\n"); //Default Green on black text
+                    uLCD.printf("\n100Hz\n");
+                    uLCD.printf("\n200Hz\n");
+                    uLCD.printf("\n300Hz <--\n");
+                    enable=0;
+                    break;
+            }
+        }
+        else {
+            continue;
+        }
     }
 }
-//if(Up.read()==1)
-//{
-//              //led1.write(Up.read());
-//}
-//        if(Down.read()==1)
-//        {
-//            led2.write(1);  //led2.write(Down.read());
-//        }
-//        if(Select.read()==1)
-//        {
-//            led3.write(1);  //led3.write(Select.read());
-//        }
