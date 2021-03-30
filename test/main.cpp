@@ -43,7 +43,8 @@ int main()
     uLCD.printf("\n1Hz <--\n");
     uLCD.printf("\n20Hz\n");
     uLCD.printf("\n50Hz\n");
-    
+    uLCD.printf("\n100Hz\n");
+
     while(1) 
     {
         if(Up.read()==1&&Down.read()==0&&Select.read()==0) 
@@ -52,12 +53,12 @@ int main()
             if(index>1)
                 index--;
             else
-                index=3;
+                index=4;
         } 
         else if(Up.read()==0&&Down.read()==1&&Select.read()==0) 
         {
             enable=1;   //<-----
-            if(index<3)
+            if(index<4)
                 index++;
             else
                 index=1;
@@ -81,6 +82,7 @@ int main()
                     uLCD.printf("\n1Hz <--\n");
                     uLCD.printf("\n20Hz\n");
                     uLCD.printf("\n50Hz\n");
+                    uLCD.printf("\n100Hz\n");
                     enable=0;
                     break;
                 case 2:
@@ -89,6 +91,7 @@ int main()
                     uLCD.printf("\n1Hz\n");
                     uLCD.printf("\n20Hz <--\n");
                     uLCD.printf("\n50Hz\n");
+                    uLCD.printf("\n100Hz\n");
                     enable=0;
                     break;
                 case 3:
@@ -97,6 +100,16 @@ int main()
                     uLCD.printf("\n1Hz\n");
                     uLCD.printf("\n20Hz\n");
                     uLCD.printf("\n50Hz <--\n");
+                    uLCD.printf("\n100Hz\n");
+                    enable=0;
+                    break;
+                case 4:
+                    uLCD.cls();
+                    uLCD.printf("\nSelection:\n"); //Default Green on black text
+                    uLCD.printf("\n1Hz\n");
+                    uLCD.printf("\n20Hz\n");
+                    uLCD.printf("\n50Hz\n");
+                    uLCD.printf("\n100Hz <--\n");
                     enable=0;
                     break;
             }
@@ -108,13 +121,20 @@ int main()
     switch(index)
     {
         case 1:
+            uLCD.printf("\n\n1Hz is selected!!\n");
             genWave(0.1);
             break;
         case 2:
+            uLCD.printf("\n\n20Hz is selected!!\n");
             genWave(1.7);
             break;
         case 3:
+            uLCD.printf("\n\n50Hz is selected!!\n");
             genWave(4.5);
+            break;
+        case 4:
+            uLCD.printf("\n\n100Hz is selected!\n");
+            genWave(10);
             break;
     }
     return 0;
