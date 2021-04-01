@@ -13,26 +13,36 @@ DigitalIn Select(D5);
  
 uLCD_4DGL uLCD(D1, D0, D2);
 
-float ADCdata[150];
+float ADCdata[200];
 int counter=0,c=0;
-int sample = 128;
+int sample = 180;
+Thread thread;
+void print_thread()
+{
+   for(int i=0; i<sample; i++)
+   {
+       printf("%f\r\n", ADCdata[i]);
+   }
+}
 
 void genWave(double freq)
 {
+    int enable=0;
     while(1)
     {   
         for (float i=(double)300/3.3; i > 0.0f; i -= freq) 
         { 
             aout = (double)i/100;
             counter++;      //count how many loops of for loop
-            if(counter%4==0&&c<sample)
+            if(counter%5==0&&c<sample)
             {
                 ADCdata[c++]=(double)i*3.3/100;
-                printf("%f\r\n", (double)i*3.3/100);
+                //printf("%f\r\n", (double)i*3.3/10);
             }
-            ThisThread::sleep_for(250ms/sample);
+            ThisThread::sleep_for(200ms/sample);
             //wait_us(50);
         }
+        thread.start(print_thread);
     }
 }
 
