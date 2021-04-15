@@ -14,8 +14,9 @@ DigitalIn Select(D5);
 uLCD_4DGL uLCD(D1, D0, D2);
 
 float ADCdata[200];
-int counter=0,c=0;
-int sample = 180;
+
+int sample = 200;
+
 Thread thread;
 void print_thread()
 {
@@ -25,24 +26,28 @@ void print_thread()
    }
 }
 
-void genWave(double freq)
+void genWave(float freq)
 {
-    int enable=0;
+    int counter=0, c=0, en=0;
     while(1)
     {   
-        for (float i=(double)300/3.3; i > 0.0f; i -= freq) 
+        for (float i=100.0f; i > 0.0f; i -= freq)
         { 
-            aout = (double)i/100;
+            aout = (float)i/110.0f;
             counter++;      //count how many loops of for loop
-            if(counter%5==0&&c<sample)
+            if(counter%5==0&&c<200)
             {
-                ADCdata[c++]=(double)i*3.3/100;
-                //printf("%f\r\n", (double)i*3.3/10);
+                ADCdata[c++]=(float)i*3.3/100;
+                //printf("%f\r\n", (float)i*3.3/10);
             }
             ThisThread::sleep_for(200ms/sample);
-            //wait_us(50);
+            //wait_us(time);
         }
-        thread.start(print_thread);
+        if(en==0&&c==sample)
+        {
+            en=1;
+            thread.start(print_thread);
+        } 
     }
 }
 
@@ -51,7 +56,7 @@ int main()
     int enable=0,index=1;
     uLCD.printf("\nSelection:\n"); //Default Green on black text
     uLCD.printf("\n1Hz <--\n");
-    uLCD.printf("\n20Hz\n");
+    uLCD.printf("\n40Hz\n");
     uLCD.printf("\n50Hz\n");
     uLCD.printf("\n100Hz\n");
 
@@ -90,7 +95,7 @@ int main()
                     uLCD.cls();
                     uLCD.printf("\nSelection:\n"); //Default Green on black text
                     uLCD.printf("\n1Hz <--\n");
-                    uLCD.printf("\n20Hz\n");
+                    uLCD.printf("\n40Hz\n");
                     uLCD.printf("\n50Hz\n");
                     uLCD.printf("\n100Hz\n");
                     enable=0;
@@ -99,7 +104,7 @@ int main()
                     uLCD.cls();
                     uLCD.printf("\nSelection:\n"); //Default Green on black text
                     uLCD.printf("\n1Hz\n");
-                    uLCD.printf("\n20Hz <--\n");
+                    uLCD.printf("\n40Hz <--\n");
                     uLCD.printf("\n50Hz\n");
                     uLCD.printf("\n100Hz\n");
                     enable=0;
@@ -108,7 +113,7 @@ int main()
                     uLCD.cls();
                     uLCD.printf("\nSelection:\n"); //Default Green on black text
                     uLCD.printf("\n1Hz\n");
-                    uLCD.printf("\n20Hz\n");
+                    uLCD.printf("\n40Hz\n");
                     uLCD.printf("\n50Hz <--\n");
                     uLCD.printf("\n100Hz\n");
                     enable=0;
@@ -117,7 +122,7 @@ int main()
                     uLCD.cls();
                     uLCD.printf("\nSelection:\n"); //Default Green on black text
                     uLCD.printf("\n1Hz\n");
-                    uLCD.printf("\n20Hz\n");
+                    uLCD.printf("\n40Hz\n");
                     uLCD.printf("\n50Hz\n");
                     uLCD.printf("\n100Hz <--\n");
                     enable=0;
@@ -135,16 +140,16 @@ int main()
             genWave(0.1);
             break;
         case 2:
-            uLCD.printf("\n\n20Hz is selected!!\n");
-            genWave(1.7);
+            uLCD.printf("\n\n40Hz is selected!!\n");
+            genWave(4);
             break;
         case 3:
             uLCD.printf("\n\n50Hz is selected!!\n");
-            genWave(4.5);
+            genWave(5);
             break;
         case 4:
             uLCD.printf("\n\n100Hz is selected!\n");
-            genWave(10);
+            genWave(8);
             break;
     }
     return 0;
